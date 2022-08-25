@@ -1,20 +1,34 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
+import axios from 'axios'
 
 function Login() {
 
   const navigate = useNavigate()
 
+  const [email, setEmail] = React.useState('')
+  const [password, setPassword] = React.useState('')
+
+  const submit = async (email: string, password: string) => {
+    const data = await axios.post('api/v1/login', { email: email, password: password })
+    console.log(data);
+  } 
+
   return (
     <div className = 'flex justify-center items-center h-screen'>
-      <form className = 'flex flex-col items-center justify-center w-9/12 lg:w-4/12 h-3/4 bg-gray-800 rounded-3xl shadow-md shadow-black'>
+      <form onSubmit={ event => {
+        event.preventDefault()
+        submit(email, password)
+      }} className = 'flex flex-col items-center justify-center w-9/12 lg:w-4/12 h-3/4 bg-gray-800 rounded-3xl shadow-md shadow-black'>
         <p className = 'md:text-6xl text-5xl mb-20 font-bold border-b-4 pb-2'>Login</p>
         <div className = 'w-64'>
           <label className='text-sm text-gray-300' htmlFor='userInput'>
-            Username
+            Email
           </label>
           <br/>
-          <input id = 'userInput' type = 'text' className='w-full py-1 px-2 rounded-md indent-2 focus:outline-none text-gray-500 text-sm' placeholder = 'Username' />
+          <input onChange={event => {
+            setEmail(event.target.value)
+          }} id = 'userInput' value = {email} type = 'text' className='w-full py-1 px-2 rounded-md indent-2 focus:outline-none text-gray-500 text-sm' placeholder = 'mail@example.com' />
         </div>
         <br/>
         <div className='w-64'>
@@ -22,10 +36,12 @@ function Login() {
             Password
           </label>
           <br/>
-          <input id='passInput' type = 'password' className='w-full py-1 px-2 rounded-md indent-2 focus:outline-none text-gray-500 text-sm ' placeholder='Password'/>
+          <input onChange={event => {
+            setPassword(event.target.value)
+          }} id='passInput' value = {password} type = 'password' className='w-full py-1 px-2 rounded-md indent-2 focus:outline-none text-gray-500 text-sm ' placeholder='Password'/>
         </div>
         <button className='mt-10 hover:scale-110 transition duration-300 bg-gray-900 px-20 py-1 rounded-full'>Login</button>
-        <p className = 'mt-4'>Not registered? <span className = 'text-gray-500 ml-1 cursor-pointer transition duration-300 hover:scale-110' onClick = {() => navigate('/register')}>Register now</span></p>
+        <div className = 'px-4 py-4 mt-4'>Not registered? <div className = 'text-gray-500 ml-1 hover:scale-110 cursor-pointer inline transition duration-300' onClick = {() => navigate('/register')}>Register now</div></div>
       </form>
     </div>
   )

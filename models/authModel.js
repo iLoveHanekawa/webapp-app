@@ -5,6 +5,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importDefault(require("mongoose"));
 const authSchema = new mongoose_1.default.Schema({
+    firstName: {
+        type: String,
+        required: [true, 'Please provide first name']
+    },
+    lastName: {
+        type: String,
+        required: [true, 'Please provide last name']
+    },
     email: {
         type: String,
         required: [true, 'Please provide email']

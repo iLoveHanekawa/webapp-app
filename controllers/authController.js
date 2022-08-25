@@ -50,8 +50,11 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 });
 exports.login = login;
 const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { email, password } = req.body;
-    const user = yield authModel_1.default.create({ email, password });
+    const { firstName, lastName, email, password } = req.body;
+    if (!email || !password || !lastName || !firstName) {
+        throw Error('All fields are required');
+    }
+    const user = yield authModel_1.default.create({ firstName, lastName, email, password });
     console.log(user);
     res.status(201).json({ user });
 });

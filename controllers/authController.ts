@@ -15,10 +15,12 @@ export const login = async (req: Request, res: Response) => {
 }
 
 export const register = async (req: Request, res: Response) => {
-    const { email, password } = req.body
-    const user = await authModel.create({ email, password })
+    const { firstName, lastName, email, password } = req.body
+    if( !email || !password || !lastName || !firstName ) {
+        throw Error('All fields are required')
+    }
+    const user = await authModel.create({ firstName, lastName, email, password })
     console.log(user);
-    
     res.status(201).json({ user })
 }
 
