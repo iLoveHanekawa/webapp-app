@@ -17,12 +17,16 @@ require("dotenv/config");
 require("express-async-errors");
 const connect_1 = require("./db/connect");
 const authRouter_1 = require("./routes/authRouter");
+const noRoute_1 = require("./middlewares/noRoute");
+const errorMidware_1 = require("./middlewares/errorMidware");
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
 app.get('/', (req, res) => {
     res.send('hi mom');
 });
 app.use('/api/v1', authRouter_1.authRouter);
+app.use(noRoute_1.noRoute);
+app.use(errorMidware_1.errorMidware);
 const port = Number(process.env.PORT) || 5000;
 const start = (port, uri) => __awaiter(void 0, void 0, void 0, function* () {
     try {

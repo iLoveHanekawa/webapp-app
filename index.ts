@@ -3,6 +3,8 @@ import 'dotenv/config'
 import 'express-async-errors'
 import { connectDB } from './db/connect'
 import { authRouter } from './routes/authRouter'
+import { noRoute } from './middlewares/noRoute'
+import { errorMidware } from './middlewares/errorMidware'
 
 const app = express()
 
@@ -11,6 +13,8 @@ app.get('/', (req: Request, res: Response) => {
     res.send('hi mom')
 })
 app.use('/api/v1', authRouter)
+app.use(noRoute)
+app.use(errorMidware)
 
 const port = Number(process.env.PORT) || 5000
 

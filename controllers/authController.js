@@ -60,19 +60,8 @@ const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 });
 exports.register = register;
 const dashboard = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        throw Error('no token');
-    }
-    const token = authHeader.split(' ')[1];
-    try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        const num = Math.floor(Math.random() * 100);
-        console.log(decoded);
-        res.json({ user: `Hello ${decoded.id}`, msg: `secret string: ${num}` });
-    }
-    catch (error) {
-        throw Error('unauthorized');
-    }
+    const { id } = req;
+    const num = Math.floor(Math.random() * 100);
+    res.json({ user: `Hello ${id}`, msg: `secret string: ${num}` });
 });
 exports.dashboard = dashboard;
