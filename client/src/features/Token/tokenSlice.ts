@@ -14,7 +14,7 @@ const tokenSlice = createSlice({
             state.value = action.payload
         },
         removeToken: (state, action) => {
-            state.value = null
+            state.value = action.payload
         }
     }
 })

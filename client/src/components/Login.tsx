@@ -6,6 +6,7 @@ import store, { StateType, AppDispatchType } from '../app/store'
 import { useDispatch, useSelector } from 'react-redux'
 import { tokenActions } from '../features/Token/tokenSlice'
 import { axiosInstance } from '../api/axiosInstance'
+import { userActions } from '../features/User/userSlice'
 
 function Login() {
 
@@ -19,6 +20,7 @@ function Login() {
     try {
       const response = await axios.post('api/v1/login', { email: email, password: password })
       dispatch(tokenActions.setToken(response.data.authToken))
+      dispatch(userActions.login(`${response.data.user.firstName} ${response.data.user.lastName}`))
       await axios.get('refresh', {
         withCredentials: true,
         headers: {

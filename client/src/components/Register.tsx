@@ -3,6 +3,7 @@ import React from 'react'
 import { useDispatch } from 'react-redux'
 import { AppDispatchType } from '../app/store'
 import { useNavigate } from 'react-router-dom'
+import { userActions } from '../features/User/userSlice'
 import { tokenActions } from '../features/Token/tokenSlice'
 
 function Register() {
@@ -21,6 +22,7 @@ function Register() {
           try {
             const response = await axios.post('api/v1/register', { firstName: firstName, lastName: lastName, email: email, password: password })
             dispatch(tokenActions.setToken(response.data.refreshToken))
+            dispatch(userActions.login(`${response.data.user.firstName} ${response.data.user.lastName}`))
             await axios.get('refresh', {
               withCredentials: true,
               headers: {

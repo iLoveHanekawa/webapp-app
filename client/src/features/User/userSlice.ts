@@ -1,11 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 type UserStateType = {
-    id: string | null
+    name: string | null
 }
 
 const initialState: UserStateType = {
-    id: null
+    name: null
 }
 
 const userSlice = createSlice({
@@ -13,10 +13,10 @@ const userSlice = createSlice({
     initialState,
     reducers: {
         login: (state, action) => {
-            state.id = action.payload
+            state.name = action.payload
         },
         logout: (state, action) => {
-            state.id = null
+            state.name = action.payload
         }
     }
 })

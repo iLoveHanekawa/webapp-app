@@ -16,7 +16,7 @@ export const login = async (req: Request, res: Response) => {
         throw createCustomError('Please register first', 401)
     }
 
-    const isPassCorrect = bcrypt.compare(password, user.password)
+    const isPassCorrect = await bcrypt.compare(password, user.password)
     if(!isPassCorrect) {
         throw createCustomError('Incorrect password', 401)
     }
@@ -42,6 +42,10 @@ export const register = async (req: Request, res: Response) => {
 
 export const dashboard = async (req: Request, res: Response) => {
     const { id } = req
+    const user = await authModel.findOne({ _id: id })
+    if(!user) {
+        throw createCustomError('No such user', 400)
+    }
     const num = Math.floor(Math.random() * 100)
-    res.json({ user: `Hello ${id}`, msg: `secret string: ${num}`})
+    res.status(200).json({ userMsg: `Hello, ${user.firstName} ${user.lastName}!`, secretMsg: `Secret string: ${num}`})
 }

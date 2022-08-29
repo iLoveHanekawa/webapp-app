@@ -26,7 +26,7 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     if (!user) {
         throw (0, CustomError_1.createCustomError)('Please register first', 401);
     }
-    const isPassCorrect = bcryptjs_1.default.compare(password, user.password);
+    const isPassCorrect = yield bcryptjs_1.default.compare(password, user.password);
     if (!isPassCorrect) {
         throw (0, CustomError_1.createCustomError)('Incorrect password', 401);
     }
@@ -50,7 +50,11 @@ const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 exports.register = register;
 const dashboard = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req;
+    const user = yield authModel_1.default.findOne({ _id: id });
+    if (!user) {
+        throw (0, CustomError_1.createCustomError)('No such user', 400);
+    }
     const num = Math.floor(Math.random() * 100);
-    res.json({ user: `Hello ${id}`, msg: `secret string: ${num}` });
+    res.status(200).json({ userMsg: `Hello, ${user.firstName} ${user.lastName}!`, secretMsg: `Secret string: ${num}` });
 });
 exports.dashboard = dashboard;

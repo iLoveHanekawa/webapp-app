@@ -10,4 +10,4 @@ const auth_1 = require("../middlewares/auth");
 exports.authRouter = express_1.default.Router();
 exports.authRouter.route('/login').post(authController_1.login);
 exports.authRouter.route('/register').post(authController_1.register);
-exports.authRouter.route('/dashboard').post(auth_1.authMidware, authController_1.dashboard);
+exports.authRouter.route('/dashboard').get(auth_1.authMidware, authController_1.dashboard);
