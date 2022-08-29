@@ -4,7 +4,7 @@ exports.errorMidware = void 0;
 const CustomError_1 = require("../errors/CustomError");
 const errorMidware = (err, req, res, next) => {
     if (err instanceof CustomError_1.CustomError) {
-        res.status(err.statusCode).json({ msg: err.message });
+        return res.status(err.statusCode).json({ msg: err.message });
     }
     res.status(500).json({ msg: "something went wrong" });
 };

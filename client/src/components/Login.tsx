@@ -1,17 +1,34 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
-import axios from 'axios'
+import axios, { AxiosError } from 'axios'
+import { response } from 'express'
+import store, { StateType, AppDispatchType } from '../app/store'
+import { useDispatch, useSelector } from 'react-redux'
+import { tokenActions } from '../features/Token/tokenSlice'
+import { axiosInstance } from '../api/axiosInstance'
 
 function Login() {
 
+  const dispatch: AppDispatchType = useDispatch()
+  const token = useSelector((state: StateType) => { return state.token.value })
   const navigate = useNavigate()
-
   const [email, setEmail] = React.useState('')
   const [password, setPassword] = React.useState('')
 
   const submit = async (email: string, password: string) => {
-    const data = await axios.post('api/v1/login', { email: email, password: password })
-    console.log(data);
+    try {
+      const response = await axios.post('api/v1/login', { email: email, password: password })
+      dispatch(tokenActions.setToken(response.data.authToken))
+      await axios.get('refresh', {
+        withCredentials: true,
+        headers: {
+          'Authorization': `Bearer ${response.data.refreshToken}`
+        }
+      })
+    } catch (error) {
+      const err = error as AxiosError
+      console.log(err.response?.data)
+    }
   } 
 
   return (

@@ -1,6 +1,24 @@
-import mongoose from "mongoose";
+import mongoose, { InsertManyOptions, Model } from "mongoose";
+import bcrypt from 'bcryptjs'
+import { Request } from "express";
+import 'dotenv/config'
+import * as jwt from 'jsonwebtoken'
 
-const authSchema = new mongoose.Schema({
+interface Auth {
+    firstName: string,
+    lastName: string,
+    email: string,
+    password: string
+}
+
+interface AuthMethods {
+    createJWT(secret: string): string
+}
+
+type AuthModel = Model<Auth, {}, AuthMethods>
+
+
+const authSchema = new mongoose.Schema<Auth, AuthModel, AuthMethods>({
     firstName: {
         type: String,
         required: [true, 'Please provide first name']
@@ -21,4 +39,16 @@ const authSchema = new mongoose.Schema({
     },
 })
 
-export default mongoose.model('users', authSchema)
+
+authSchema.pre('save', async function () {
+    const salt = await bcrypt.genSalt(10)
+    this.password = await bcrypt.hash(this.password, salt)
+})
+
+authSchema.method('createJWT', function createJWT(this: mongoose.Document<unknown, any, Auth> & Auth & {
+    _id: mongoose.Types.ObjectId;
+} & AuthMethods, secret: string) {
+    return jwt.sign({ id: `${this._id}`}, secret, { expiresIn: secret === (process.env.JWT_SECRET)? '10s': '3m'})
+})
+
+export default mongoose.model<Auth, AuthModel>('users', authSchema)

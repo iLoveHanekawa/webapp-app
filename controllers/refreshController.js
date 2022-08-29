@@ -35,37 +35,31 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const mongoose_1 = __importDefault(require("mongoose"));
-const bcryptjs_1 = __importDefault(require("bcryptjs"));
-require("dotenv/config");
+exports.storeRefreshToken = exports.generateAccessToken = void 0;
 const jwt = __importStar(require("jsonwebtoken"));
-const authSchema = new mongoose_1.default.Schema({
-    firstName: {
-        type: String,
-        required: [true, 'Please provide first name']
-    },
-    lastName: {
-        type: String,
-        required: [true, 'Please provide last name']
-    },
-    email: {
-        type: String,
-        required: [true, 'Please provide email'],
-        match: [/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/, 'Provide valid email'],
-        unique: true
-    },
-    password: {
-        type: String,
-        required: [true, 'Please provide password']
-    },
+const CustomError_1 = require("../errors/CustomError");
+require("dotenv/config");
+const dayjs_1 = __importDefault(require("dayjs"));
+const dayJS = (0, dayjs_1.default)();
+const generateAccessToken = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const refreshToken = req.cookies.jwt;
+    try {
+        const decode = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+        const token = jwt.sign({ id: decode.id }, process.env.JWT_SECRET, { expiresIn: '10s' });
+        res.json({ id: decode.id, token });
+    }
+    catch (error) {
+        throw (0, CustomError_1.createCustomError)('Expired token: Login again', 401);
+    }
 });
-authSchema.pre('save', function () {
-    return __awaiter(this, void 0, void 0, function* () {
-        const salt = yield bcryptjs_1.default.genSalt(10);
-        this.password = yield bcryptjs_1.default.hash(this.password, salt);
-    });
+exports.generateAccessToken = generateAccessToken;
+const storeRefreshToken = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { authorization } = req.headers;
+    if (!authorization || !authorization.startsWith('Bearer ')) {
+        throw (0, CustomError_1.createCustomError)('Login / register first', 401);
+    }
+    const refreshToken = authorization === null || authorization === void 0 ? void 0 : authorization.split(' ')[1];
+    console.log('Token set in cookies');
+    res.cookie('jwt', refreshToken, { secure: true, httpOnly: true, expires: dayJS.add(3, 'minutes').toDate() }).send();
 });
-authSchema.method('createJWT', function createJWT(secret) {
-    return jwt.sign({ id: `${this._id}` }, secret, { expiresIn: secret === (process.env.JWT_SECRET) ? '10s' : '3m' });
-});
-exports.default = mongoose_1.default.model('users', authSchema);
+exports.storeRefreshToken = storeRefreshToken;
