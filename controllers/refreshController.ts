@@ -14,10 +14,11 @@ declare module 'jsonwebtoken' {
 
 export const generateAccessToken = async (req: Request, res: Response) => {
     const refreshToken = req.cookies.jwt
+    console.log(`Refresh Token: ${refreshToken}`) 
     try {
         const decode = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET as string) as jwt.JwtPayload
-        const token = jwt.sign({ id: decode.id }, process.env.JWT_SECRET as string, { expiresIn: '10s'})
-        res.json({ id: decode.id, token })
+        const token = jwt.sign({ id: decode.id }, process.env.JWT_SECRET as string, { expiresIn: '30s'})
+        res.json({ token })
     } catch (error) {
         throw createCustomError('Expired token: Login again', 401)
     }
@@ -28,5 +29,9 @@ export const storeRefreshToken = async (req: Request, res: Response) => {
     if( !authorization || !authorization.startsWith('Bearer ')) { throw createCustomError('Login / register first', 401)}
     const refreshToken = authorization?.split(' ')[1]
     console.log('Token set in cookies')
-    res.cookie('jwt', refreshToken, { secure: true, httpOnly: true, expires: dayJS.add(3, 'minutes').toDate()}).send()
+    res.cookie('jwt', refreshToken, { secure: true, httpOnly: true, expires: dayJS.add(3, 'minute').toDate()}).send()
+}
+
+export const deleteRefreshToken = async (req: Request, res: Response) => {
+    res.clearCookie('jwt').send()
 }

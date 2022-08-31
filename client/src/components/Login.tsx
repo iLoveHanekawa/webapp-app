@@ -10,6 +10,17 @@ import { userActions } from '../features/User/userSlice'
 
 function Login() {
 
+  React.useEffect(() => {
+    const logout = async () => {
+      try {
+        await axios.get('logout', { withCredentials: true })
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    logout()
+  }, [])
+
   const dispatch: AppDispatchType = useDispatch()
   const token = useSelector((state: StateType) => { return state.token.value })
   const navigate = useNavigate()

@@ -9,3 +9,4 @@ const express_1 = __importDefault(require("express"));
 exports.tokenRouter = express_1.default.Router();
 exports.tokenRouter.route('/token').get(refreshController_1.generateAccessToken);
 exports.tokenRouter.route('/refresh').get(refreshController_1.storeRefreshToken);
+exports.tokenRouter.route('/logout').get(refreshController_1.deleteRefreshToken);

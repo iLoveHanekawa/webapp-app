@@ -66,6 +66,6 @@ authSchema.pre('save', function () {
     });
 });
 authSchema.method('createJWT', function createJWT(secret) {
-    return jwt.sign({ id: `${this._id}` }, secret, { expiresIn: secret === (process.env.JWT_SECRET) ? '30s' : '3m' });
+    return jwt.sign({ id: `${this._id}` }, secret, { expiresIn: secret === (process.env.JWT_SECRET) ? '5s' : '3m' });
 });
 exports.default = mongoose_1.default.model('users', authSchema);

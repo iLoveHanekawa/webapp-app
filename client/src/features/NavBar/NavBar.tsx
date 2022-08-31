@@ -5,6 +5,8 @@ import { StateType, AppDispatchType } from '../../app/store'
 import { useDispatch, useSelector } from 'react-redux'
 import { tokenActions } from '../Token/tokenSlice'
 import { userActions } from '../User/userSlice'
+import axios from 'axios'
+import { navActions } from './NavSlice'
 
 function NavBar() {
 
@@ -23,10 +25,11 @@ function NavBar() {
       {token !== null && <div className='mr-4'>{name}</div>}
       <p className='flex justify-center items-center hover:scale-110 transition duration-500'>
         {token === null? <AiOutlineLogin className = 'mr-2'/>: <AiOutlineLogout className='mr-1' />}
-        <button onClick = {() => {
+        <button onClick = {async () => {
           if(token !== null) {
             dispatch(tokenActions.removeToken(null))
             dispatch(userActions.logout(null))
+            dispatch(navActions.loggedOut(true))
           }
           navigate('/')
         }}>

@@ -48,7 +48,7 @@ authSchema.pre('save', async function () {
 authSchema.method('createJWT', function createJWT(this: mongoose.Document<unknown, any, Auth> & Auth & {
     _id: mongoose.Types.ObjectId;
 } & AuthMethods, secret: string) {
-    return jwt.sign({ id: `${this._id}`}, secret, { expiresIn: secret === (process.env.JWT_SECRET)? '30s': '3m'})
+    return jwt.sign({ id: `${this._id}`}, secret, { expiresIn: secret === (process.env.JWT_SECRET)? '5s': '3m'})
 })
 
 export default mongoose.model<Auth, AuthModel>('users', authSchema)

@@ -35,7 +35,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.storeRefreshToken = exports.generateAccessToken = void 0;
+exports.deleteRefreshToken = exports.storeRefreshToken = exports.generateAccessToken = void 0;
 const jwt = __importStar(require("jsonwebtoken"));
 const CustomError_1 = require("../errors/CustomError");
 require("dotenv/config");
@@ -43,10 +43,11 @@ const dayjs_1 = __importDefault(require("dayjs"));
 const dayJS = (0, dayjs_1.default)();
 const generateAccessToken = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const refreshToken = req.cookies.jwt;
+    console.log(`Refresh Token: ${refreshToken}`);
     try {
         const decode = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
-        const token = jwt.sign({ id: decode.id }, process.env.JWT_SECRET, { expiresIn: '10s' });
-        res.json({ id: decode.id, token });
+        const token = jwt.sign({ id: decode.id }, process.env.JWT_SECRET, { expiresIn: '30s' });
+        res.json({ token });
     }
     catch (error) {
         throw (0, CustomError_1.createCustomError)('Expired token: Login again', 401);
@@ -60,6 +61,10 @@ const storeRefreshToken = (req, res) => __awaiter(void 0, void 0, void 0, functi
     }
     const refreshToken = authorization === null || authorization === void 0 ? void 0 : authorization.split(' ')[1];
     console.log('Token set in cookies');
-    res.cookie('jwt', refreshToken, { secure: true, httpOnly: true, expires: dayJS.add(3, 'minutes').toDate() }).send();
+    res.cookie('jwt', refreshToken, { secure: true, httpOnly: true, expires: dayJS.add(3, 'minute').toDate() }).send();
 });
 exports.storeRefreshToken = storeRefreshToken;
+const deleteRefreshToken = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    res.clearCookie('jwt').send();
+});
+exports.deleteRefreshToken = deleteRefreshToken;
